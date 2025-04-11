@@ -1,21 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
 	"html/template"
 	"net/http"
 	"os/exec"
 	"regexp"
 )
 
-var tmpl = template.Must(template.ParseFiles("index.html"))
+var tmplMain = template.Must(template.ParseFiles("index.html"))
 
 // Strict domain[:port]/path format
-var validURL = regexp.MustCompile(`^[a-zA-Z0-9.-]+(:[0-9]+)?\/[a-zA-Z0-9/_\-\.]+$`)
+var validURLMain = regexp.MustCompile(`^[a-zA-Z0-9.-]+(:[0-9]+)?\/[a-zA-Z0-9/_\-\.]+$`)
 
-func main() {
+func mainFunction() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/submit", submitHandler)
 
@@ -23,15 +20,15 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl.Execute(w, "")
+	tmplMain.Execute(w, "")
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	url := r.FormValue("url")
 
-	if !validURL.MatchString(url) {
-		tmpl.Execute(w, "❌ Invalid format. Use domain.com[:port]/package")
+	if !validURLMain.MatchString(url) {
+		tmplMain.Execute(w, "❌ Invalid format. Use domain.com[:port]/package")
 		return
 	}
 
@@ -52,5 +49,9 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		output += "\nError reading flag.txt: " + err.Error()
 	}
 
-	tmpl.Execute(w, output)
+	tmplMain.Execute(w, output)
+}
+
+func main() {
+	mainFunction()
 }
